@@ -1,0 +1,16 @@
+{
+  "name": "pro-monitor-v2",
+  "private": true,
+  "version": "0.1.0",
+  "packageManager": "pnpm@10.0.0",
+  "scripts": {
+    "dev": "concurrently \"pnpm --filter @pro-monitor/server dev\" \"pnpm --filter @pro-monitor/web dev\"",
+    "build": "pnpm -r build",
+    "lint": "pnpm -r lint",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1",
+    "typescript": "^5.8.3"
+  }
+}

@@ -1,0 +1,49 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Pc {
+  id        String           @id @default(cuid())
+  hostname  String           @unique
+  site      String           @default("default")
+  apiKey    String           @unique
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+  metrics   MetricSnapshot[]
+  alerts    Alert[]
+}
+
+model MetricSnapshot {
+  id         String   @id @default(cuid())
+  pcId       String
+  cpuPercent Float
+  ramPercent Float
+  diskPercent Float
+  createdAt  DateTime @default(now())
+  pc         Pc       @relation(fields: [pcId], references: [id], onDelete: Cascade)
+
+  @@index([pcId, createdAt])
+}
+
+model Alert {
+  id        String   @id @default(cuid())
+  pcId      String
+  severity  String
+  message   String
+  isOpen    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  pc        Pc       @relation(fields: [pcId], references: [id], onDelete: Cascade)
+}
+
+model User {
+  id        String   @id @default(cuid())
+  username  String   @unique
+  password  String
+  role      String
+  createdAt DateTime @default(now())
+}
