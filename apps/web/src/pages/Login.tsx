@@ -4,7 +4,7 @@ import { useAuthStore } from "../stores/useAuthStore";
 
 export function LoginPage(): JSX.Element {
   const login = useAuthStore((state) => state.login);
-  const [username, setUsername] = useState("admin");
+  const [username] = useState("admin");
   const [password, setPassword] = useState("admin123");
   const [error, setError] = useState("");
   const navigate = useNavigate();
@@ -24,8 +24,9 @@ export function LoginPage(): JSX.Element {
     <main style={{ maxWidth: 420, margin: "4rem auto", padding: "1.5rem", background: "var(--bg-secondary)" }}>
       <h1>Login Pro Monitor</h1>
       <form onSubmit={handleSubmit}>
+        <p>Utente: <strong>admin</strong></p>
         <p>
-          <input value={username} onChange={(e) => setUsername(e.target.value)} placeholder="Username" />
+          <input value={username} placeholder="Username" disabled />
         </p>
         <p>
           <input
