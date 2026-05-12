@@ -57,8 +57,10 @@ export async function registerIngestRoutes(app: FastifyInstance): Promise<void> 
       io.emit("alert:new", {
         id: alert.id,
         pcId: alert.pcId,
+        hostname: pc.hostname,
         severity: alert.severity,
         message: alert.message,
+        isOpen: alert.isOpen,
         createdAt: alert.createdAt.toISOString()
       });
     }

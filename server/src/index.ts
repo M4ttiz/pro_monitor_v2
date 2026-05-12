@@ -35,13 +35,79 @@ await app.register(async (securedApp) => {
   securedApp.get("/api/v1/alerts", async () => {
     const alerts = await prisma.alert.findMany({
       take: 100,
-      orderBy: { createdAt: "desc" }
+      where: { isOpen: true },
+      orderBy: { createdAt: "desc" },
+      include: { pc: true }
     });
 
     return alerts.map((a) => ({
-      ...a,
+      id: a.id,
+      pcId: a.pcId,
+      hostname: a.pc.hostname,
+      severity: a.severity,
+      message: a.message,
+      isOpen: a.isOpen,
       createdAt: a.createdAt.toISOString()
     }));
+  });
+
+  securedApp.post("/api/v1/alerts/:id/ack", async (request, reply) => {
+    const params = request.params as { id?: string };
+    if (!params.id) {
+      return reply.status(400).send({ error: "missing_alert_id" });
+    }
+
+    const found = await prisma.alert.findUnique({ where: { id: params.id } });
+    if (!found) {
+      return reply.status(404).send({ error: "alert_not_found" });
+    }
+
+    await prisma.alert.update({
+      where: { id: params.id },
+      data: { isOpen: false }
+    });
+
+    return { ok: true };
+  });
+
+  securedApp.get("/api/v1/pcs", async () => {
+    const pcs = await prisma.pc.findMany({
+      orderBy: { hostname: "asc" },
+      include: {
+        metrics: {
+          take: 1,
+          orderBy: { createdAt: "desc" }
+        }
+      }
+    });
+
+    const now = Date.now();
+    return pcs.map((pc) => {
+      const latest = pc.metrics[0];
+      const lastSeenAt = latest?.createdAt ?? pc.updatedAt;
+      const ageMs = now - lastSeenAt.getTime();
+      const isOffline = ageMs > 60_000;
+      const isCritical = (latest?.cpuPercent ?? 0) >= 95 || (latest?.ramPercent ?? 0) >= 95 || (latest?.diskPercent ?? 0) >= 95;
+      const isWarning = (latest?.cpuPercent ?? 0) >= 80 || (latest?.ramPercent ?? 0) >= 80 || (latest?.diskPercent ?? 0) >= 80;
+      const status = isOffline ? "offline" : isCritical ? "critical" : isWarning ? "warning" : "online";
+
+      return {
+        id: pc.id,
+        hostname: pc.hostname,
+        site: pc.site,
+        apiKey: pc.apiKey,
+        status,
+        lastSeenAt: lastSeenAt.toISOString(),
+        latestMetric: latest
+          ? {
+              cpuPercent: latest.cpuPercent,
+              ramPercent: latest.ramPercent,
+              diskPercent: latest.diskPercent,
+              createdAt: latest.createdAt.toISOString()
+            }
+          : null
+      };
+    });
   });
 });
 await registerAgentRoutes(app);
