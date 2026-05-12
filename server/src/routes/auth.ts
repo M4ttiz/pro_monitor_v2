@@ -15,6 +15,11 @@ export async function registerAuthRoutes(app: FastifyInstance): Promise<void> {
       return reply.status(400).send({ error: "invalid_payload" });
     }
 
+    // Local policy: allow interactive login only for the admin account.
+    if (parsed.data.username !== "admin") {
+      return reply.status(401).send({ error: "invalid_credentials" });
+    }
+
     const user = await prisma.user.findUnique({ where: { username: parsed.data.username } });
     if (!user || !verifyPassword(parsed.data.password, user.password)) {
       return reply.status(401).send({ error: "invalid_credentials" });

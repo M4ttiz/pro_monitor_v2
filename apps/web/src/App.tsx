@@ -22,7 +22,7 @@ export function App(): JSX.Element {
       <Route
         path="/"
         element={
-          <RoleGuard allowed={["admin", "it_operator", "manager"]}>
+          <RoleGuard allowed={["admin"]}>
             <DashboardPage />
           </RoleGuard>
         }

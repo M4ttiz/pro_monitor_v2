@@ -52,12 +52,8 @@ const start = async (): Promise<void> => {
   await app.listen({ port, host });
   setupSocket(app.server, jwtSecret);
 
-  // Seed local demo users only if missing.
-  const users = [
-    { username: "admin", password: "admin123", role: "admin" },
-    { username: "it", password: "it123", role: "it_operator" },
-    { username: "manager", password: "manager123", role: "manager" }
-  ] as const;
+  // Seed only local admin demo user.
+  const users = [{ username: "admin", password: "admin123", role: "admin" }] as const;
 
   for (const user of users) {
     const found = await prisma.user.findUnique({ where: { username: user.username } });
