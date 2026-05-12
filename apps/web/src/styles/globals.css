@@ -15,14 +15,52 @@ a {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 220px 1fr;
+  grid-template-columns: 260px 1fr;
   min-height: 100vh;
+  background: radial-gradient(circle at 20% 15%, rgba(59, 130, 246, 0.16), transparent 35%), var(--bg-primary);
 }
 
 .sidebar {
-  background: var(--bg-secondary);
+  background: linear-gradient(180deg, rgba(26, 29, 39, 0.98), rgba(15, 17, 23, 0.98));
   border-right: 1px solid var(--border-color);
-  padding: 1rem;
+  padding: 1.2rem 1rem;
+}
+
+.brand-title {
+  margin: 0;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.brand-subtitle {
+  margin-top: 0.35rem;
+  color: var(--text-secondary);
+  font-size: 0.85rem;
+}
+
+.sidebar-nav {
+  margin-top: 1rem;
+  display: grid;
+  gap: 0.55rem;
+}
+
+.sidebar-nav button {
+  text-align: left;
+  padding: 0.65rem 0.75rem;
+  border-radius: 10px;
+  background: rgba(37, 40, 54, 0.75);
+  border: 1px solid rgba(71, 85, 105, 0.4);
+  transition: all 160ms ease;
+}
+
+.sidebar-nav button:hover {
+  border-color: rgba(59, 130, 246, 0.8);
+  transform: translateX(2px);
+}
+
+.sidebar-nav button.active {
+  background: linear-gradient(90deg, rgba(59, 130, 246, 0.22), rgba(59, 130, 246, 0.08));
+  border-color: rgba(59, 130, 246, 0.85);
 }
 
 .content-area {
@@ -30,30 +68,11 @@ a {
 }
 
 .panel {
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
+  background: rgba(26, 29, 39, 0.82);
+  border: 1px solid rgba(71, 85, 105, 0.45);
+  border-radius: 12px;
   padding: 1rem;
-}
-
-.tab-strip {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
-}
-
-.tab-strip button {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  padding: 0.45rem 0.75rem;
-  cursor: pointer;
-}
-
-.tab-strip button.active {
-  border-color: var(--accent-blue);
-  background: rgba(59, 130, 246, 0.16);
+  backdrop-filter: blur(6px);
 }
 
 .kpi-grid {
@@ -99,4 +118,22 @@ button {
   border-radius: 6px;
   padding: 0.35rem 0.6rem;
   cursor: pointer;
+}
+
+.pulse-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.8rem;
+}
+
+.pulse-grid article {
+  background: rgba(37, 40, 54, 0.72);
+  border: 1px solid rgba(71, 85, 105, 0.35);
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.muted {
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
 }

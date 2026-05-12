@@ -13,7 +13,7 @@ export function DashboardPage(): JSX.Element {
   const metrics = useMetricsStore((state) => state.metrics);
   const setInitial = useMetricsStore((state) => state.setInitial);
   const accessToken = useAuthStore((state) => state.accessToken);
-  const [activeTab, setActiveTab] = useState<"dashboard" | "hosts" | "alerts" | "agent">("dashboard");
+  const [activeTab, setActiveTab] = useState<"dashboard" | "hosts" | "alerts" | "agent" | "system">("dashboard");
   const [hosts, setHosts] = useState<
     Array<{
       id: string;
@@ -74,6 +74,7 @@ export function DashboardPage(): JSX.Element {
 
   const openAlertCount = alerts.length;
   const onlineHosts = hosts.filter((h) => h.status !== "offline").length;
+  const criticalHosts = hosts.filter((h) => h.status === "critical").length;
 
   const ackAlert = async (alertId: string) => {
     if (!accessToken) {
@@ -90,23 +91,9 @@ export function DashboardPage(): JSX.Element {
 
   return (
     <div className="app-shell">
-      <Sidebar />
+      <Sidebar activeTab={activeTab} hostCount={hosts.length} openAlertCount={openAlertCount} onChangeTab={setActiveTab} />
       <main className="content-area">
         <Header />
-        <section className="tab-strip">
-          <button type="button" className={activeTab === "dashboard" ? "active" : ""} onClick={() => setActiveTab("dashboard")}>
-            Dashboard
-          </button>
-          <button type="button" className={activeTab === "hosts" ? "active" : ""} onClick={() => setActiveTab("hosts")}>
-            Host ({hosts.length})
-          </button>
-          <button type="button" className={activeTab === "alerts" ? "active" : ""} onClick={() => setActiveTab("alerts")}>
-            Alert ({openAlertCount})
-          </button>
-          <button type="button" className={activeTab === "agent" ? "active" : ""} onClick={() => setActiveTab("agent")}>
-            Agent
-          </button>
-        </section>
         <section className="kpi-grid">
           <KpiCard label="CPU" value={`${summary.cpu.toFixed(1)}%`} colorVar="--accent-red" />
           <KpiCard label="RAM" value={`${summary.ram.toFixed(1)}%`} colorVar="--accent-orange" />
@@ -185,6 +172,29 @@ export function DashboardPage(): JSX.Element {
             <p>3) Esegui il comando:</p>
             <pre className="mono">.\install.ps1 -ApiBaseUrl "http://192.168.50.159:3001" -Site "Sede-01"</pre>
             <p>L'host comparira automaticamente nella tab Host dopo i primi invii metriche.</p>
+          </section>
+        ) : null}
+        {activeTab === "system" ? (
+          <section style={{ marginTop: "1rem" }} className="panel">
+            <h3>System Pulse</h3>
+            <div className="pulse-grid">
+              <article>
+                <p className="muted">Endpoint API</p>
+                <p className="mono">http://192.168.50.159:3001</p>
+              </article>
+              <article>
+                <p className="muted">Host Critici</p>
+                <p className="mono">{criticalHosts}</p>
+              </article>
+              <article>
+                <p className="muted">Alert Aperti</p>
+                <p className="mono">{openAlertCount}</p>
+              </article>
+              <article>
+                <p className="muted">Ultimo campione</p>
+                <p className="mono">{latest ? new Date(latest.createdAt).toLocaleTimeString() : "--:--:--"}</p>
+              </article>
+            </div>
           </section>
         ) : null}
       </main>
