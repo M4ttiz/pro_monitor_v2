@@ -4,7 +4,7 @@
   "version": "0.1.0",
   "packageManager": "pnpm@10.0.0",
   "scripts": {
-    "dev": "concurrently \"pnpm --filter @pro-monitor/server dev\" \"pnpm --filter @pro-monitor/web dev\"",
+    "dev": "concurrently \"pnpm --filter @pro-monitor/server dev\" \"pnpm --filter @pro-monitor/web dev -- --host 0.0.0.0 --port 5173\"",
     "build": "pnpm -r build",
     "lint": "pnpm -r lint",
     "typecheck": "pnpm -r typecheck"
