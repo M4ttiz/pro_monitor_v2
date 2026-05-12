@@ -57,18 +57,20 @@ const start = async (): Promise<void> => {
 
   for (const user of users) {
     const found = await prisma.user.findUnique({ where: { username: user.username } });
+    const hashedPassword = hashPassword(user.password);
     if (!found) {
       await prisma.user.create({
         data: {
           ...user,
-          password: hashPassword(user.password)
+          password: hashedPassword
         }
       });
-    } else if (!found.password.includes(":")) {
+    } else {
       await prisma.user.update({
         where: { id: found.id },
         data: {
-          password: hashPassword(found.password)
+          password: hashedPassword,
+          role: user.role
         }
       });
     }

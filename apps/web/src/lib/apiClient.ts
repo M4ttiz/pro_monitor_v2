@@ -1,4 +1,12 @@
-const API_BASE = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:3001";
+const getDefaultApiBase = (): string => {
+  if (typeof window === "undefined") {
+    return "http://localhost:3001";
+  }
+
+  return `${window.location.protocol}//${window.location.hostname}:3001`;
+};
+
+const API_BASE = import.meta.env.VITE_API_BASE_URL ?? getDefaultApiBase();
 import { readStoredAuth, writeStoredAuth } from "./authSession";
 
 type UnauthorizedHandler = () => void;
